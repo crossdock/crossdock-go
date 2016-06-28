@@ -3,7 +3,7 @@
 set -e
 
 COVER=cover
-ROOT_PKG=github.com/thriftrw/thriftrw-go/
+ROOT_PKG=github.com/crossdock/crossdock-go/
 
 if [[ -d "$COVER" ]]; then
 	rm -rf "$COVER"
