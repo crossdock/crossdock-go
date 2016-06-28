@@ -35,3 +35,8 @@ install_ci: install
 .PHONY: test_ci
 test_ci:
 	./scripts/cover.sh $(shell go list $(PACKAGES))
+
+.PHONY: lint_ci
+lint_ci:
+	golint $(PACKAGES)
+	go vet $(PACKAGES)
