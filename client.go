@@ -38,8 +38,12 @@ const BehaviorParam = "behavior"
 
 // Start begins a blocking Crossdock client
 func Start(behaviors Behaviors) {
-	http.Handle("/", requestHandler{behaviors: behaviors})
+	http.Handle("/", Handler(behaviors))
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func Handler(behaviors Behaviors) http.Handler {
+	return requestHandler{behaviors: behaviors}
 }
 
 type requestHandler struct {
