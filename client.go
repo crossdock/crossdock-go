@@ -38,12 +38,20 @@ const BehaviorParam = "behavior"
 
 // Start begins a blocking Crossdock client
 func Start(behaviors Behaviors) {
-	http.Handle("/", requestHandler{behaviors: behaviors})
+	http.Handle("/", Handler(behaviors, false))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+// Handler returns an http.Handler that dispatches to functions defined in behaviors map.
+// If failOnUnknown is true, a behavior that is not in the behaviors map will cause the
+// handler to return an error status. Otherwise, the handler returns skipped status.
+func Handler(behaviors Behaviors, failOnUnknown bool) http.Handler {
+	return requestHandler{behaviors: behaviors, failOnUnknown: failOnUnknown}
+}
+
 type requestHandler struct {
-	behaviors Behaviors
+	behaviors     Behaviors
+	failOnUnknown bool
 }
 
 func (h requestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +63,11 @@ func (h requestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	entries := Run(params, func(t T) {
 		behavior := h.behaviors[t.Behavior()]
 		if behavior == nil {
-			t.Skipf("unknown behavior %q", t.Behavior())
+			if h.failOnUnknown {
+				t.Errorf("unknown behavior %q", t.Behavior())
+			} else {
+				t.Skipf("unknown behavior %q", t.Behavior())
+			}
 			return
 		}
 		behavior(t)
