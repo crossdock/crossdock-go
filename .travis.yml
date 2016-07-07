@@ -8,6 +8,7 @@ matrix:
         - go: 1.6
           env: LINT=1
         - go: 1.7
+          # TODO Go 1.7 doesn't support golint yet, set LINT=1 once it does
           env: LINT=0
 
 env:
@@ -18,9 +19,7 @@ install:
     - make install_ci
 
 script:
-    if [ $LINT == 1 ]; then
-       make lint_ci
-    fi
-    make test_ci
-    travis_retry goveralls -coverprofile=cover.out -service=travis-ci || true
-    rm -rf vendor/*
+    - if [ $LINT == 1 ]; then make lint_ci; fi
+    - make test_ci
+    - travis_retry goveralls -coverprofile=cover.out -service=travis-ci || true
+    - rm -rf vendor/*
