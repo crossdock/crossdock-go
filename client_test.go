@@ -55,18 +55,18 @@ func testHandler(t *testing.T, failOnUnknown bool, status string) {
 	server := httptest.NewServer(Handler(behaviors, failOnUnknown))
 	defer server.Close()
 
-	verifyBehavior(t, server.URL, "b1", map[string]string{
+	runTestCase(t, server.URL, "b1", map[string]string{
 		"status": "passed",
 		"output": "ok",
 	})
 
-	verifyBehavior(t, server.URL, "b2", map[string]string{
+	runTestCase(t, server.URL, "b2", map[string]string{
 		"status": status,
-		"output": "unknown behavior \"b2\"",
+		"output": `unknown behavior "b2"`,
 	})
 }
 
-func verifyBehavior(t *testing.T, url string, behavior string, expectation map[string]string) {
+func runTestCase(t *testing.T, url string, behavior string, expectation map[string]string) {
 	res, err := http.Get(fmt.Sprintf("%s/?behavior=%s", url, behavior))
 	require.NoError(t, err)
 
