@@ -46,7 +46,7 @@ func Start(behaviors Behaviors) {
 // If failOnUnknown is true, a behavior that is not in the behaviors map will cause the
 // handler to return an error status. Otherwise, the handler returns skipped status.
 func Handler(behaviors Behaviors, failOnUnknown bool) http.Handler {
-	return requestHandler{behaviors: behaviors}
+	return requestHandler{behaviors: behaviors, failOnUnknown: failOnUnknown}
 }
 
 type requestHandler struct {
