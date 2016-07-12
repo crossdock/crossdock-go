@@ -7,7 +7,9 @@ matrix:
           env: LINT=0
         - go: 1.6
           env: LINT=1
-        - go: 1.7
+        - go: 1.7rc1
+          env: LINT=0
+        - go: tip
           env: LINT=0
 
 env:
