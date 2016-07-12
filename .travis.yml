@@ -1,16 +1,11 @@
 sudo: false
 language: go
 
-matrix:
-    include:
-        - go: 1.5
-          env: LINT=0
-        - go: 1.6
-          env: LINT=1
-        - go: 1.7rc1
-          env: LINT=0
-        - go: tip
-          env: LINT=0
+go:
+    - 1.5
+    - 1.6
+    - 1.7rc1
+    - tip
 
 env:
     global:
@@ -20,7 +15,7 @@ install:
     - make install_ci
 
 script:
-    - if [ $LINT == 1 ]; then make lint_ci; fi
+    - then make lint_ci
     - make test_ci
     - travis_retry goveralls -coverprofile=cover.out -service=travis-ci || true
     - rm -rf vendor/*
