@@ -15,7 +15,7 @@ install:
     - make install_ci
 
 script:
-    - then make lint_ci
+    - make lint_ci
     - make test_ci
     - travis_retry goveralls -coverprofile=cover.out -service=travis-ci || true
     - rm -rf vendor/*
