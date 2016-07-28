@@ -1,10 +1,9 @@
 package: github.com/crossdock/crossdock-go
 import:
-- package: github.com/stretchr/testify
-  subpackages:
-  - assert
-  - require
 - package: golang.org/x/net
   subpackages:
   - context
   - context/ctxhttp
+- package: github.com/davecgh/go-spew
+  subpackages:
+  - spew

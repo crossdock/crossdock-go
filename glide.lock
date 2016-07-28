@@ -1,22 +1,17 @@
-hash: 7e40ca7b6f5ec96a428cd185839eb4e5d5129ca7639138ed65a08b3c10f7b1a1
-updated: 2016-06-27T17:20:19.089633153-07:00
+hash: a970fa7a49e831327ca2bfda44d071afa1641d718a1a884d2aa62b9fca73fed0
+updated: 2016-07-28T11:01:21.702887088-07:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
-- name: github.com/stretchr/testify
-  version: d77da356e56a7428ad25149ca77381849a6a5232
-  subpackages:
-  - assert
-  - require
 - name: golang.org/x/net
-  version: 04557861f124410b768b1ba5bb3a91b705afbfc6
+  version: 6a513affb38dc9788b449d59ffed099b8de18fa0
   subpackages:
   - context
   - context/ctxhttp
-devImports: []
+testImports: []
