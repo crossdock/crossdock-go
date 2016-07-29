@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/crossdock/crossdock-go/assert"
+	"github.com/crossdock/crossdock-go/require"
 )
 
 // Assert builds an Assertions object that writes success or failure to the

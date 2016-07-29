@@ -23,7 +23,7 @@ package crossdock
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/crossdock/crossdock-go/assert"
 )
 
 func TestRunRecordsFailureOnFatal(t *testing.T) {

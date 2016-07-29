@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	"github.com/crossdock/crossdock-go/require"
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
 )
