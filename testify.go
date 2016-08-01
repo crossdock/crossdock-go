@@ -134,14 +134,14 @@ func (st sinkTestingT) Errorf(format string, args ...interface{}) {
 // Fatals(t): Only failures will be logged to crossdock.T. Execution of the
 // behavior will be temrinated immediately on failure.
 //
-//	                     +--------+--------+---------+--------+
-//	                     | Assert | Checks | Require | Fatals |
-//	+--------------------+--------+--------+---------+--------+
+// 	                     +--------+--------+---------+--------+
+// 	                     | Assert | Checks | Require | Fatals |
+// 	+--------------------+--------+--------+---------+--------+
 // 	| Log on success     | Yes    | No     | Yes     | No     |
-//	+--------------------+--------+--------+---------+--------+
+// 	+--------------------+--------+--------+---------+--------+
 // 	| Continue execution | Yes    | Yes    | No      | No     |
 // 	| on failure         |        |        |         |        |
-//	+--------------------+--------+--------+---------+--------+
+// 	+--------------------+--------+--------+---------+--------+
 //
 type Assertions interface {
 	Condition(comp assert.Comparison, msgAndArgs ...interface{}) bool
