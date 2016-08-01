@@ -28,42 +28,64 @@ import (
 	"github.com/crossdock/crossdock-go/require"
 )
 
-// Assert builds an Assertions object that writes success or failure to the
-// given sink.
+// Assert builds an Assertions object that logs success or failure for all
+// operations to the given T. The behavior will continue executing in case of
+// failure.
 //
-// Each assertion made with the Assertions object will result in either a
-// failure or a success being written to the sink.
+// The following will log exactly len(tests) entries.
+//
+// 	assert := Assert(t)
+// 	for _, tt := range tests {
+// 		assert.Equals(tt.want, f(tt.give), "expected f(%v) == %v", tt.give, tt.want)
+// 	}
 func Assert(t T) Assertions {
 	return sinkAssertions{t, assert.New(sinkTestingT{t})}
 }
 
-// Checks builds an Assertions object that writes failures to the given sink.
+// Checks builds an Assertions object that logs only failures to the given T.
+// The behavior will continue executing in case of failure.
 //
-// This is the same as Assert except that nothing is written to the sink in
-// case of success.
+// The following will log only as many entries as invalid test cases.
+//
+// 	checks := Checks(t)
+// 	for _, tt := range tests {
+// 		checks.Equals(tt.want, f(tt.give), "expected f(%v) == %v", tt.give, tt.want)
+// 	}
 func Checks(t T) Assertions {
 	return assert.New(sinkTestingT{t})
 }
 
-// Require builds an Assertions object that writes success or failure to the
-// given sink. In case of failure, it also stops executing the current
-// behavior.
+// Require builds an Assertions object that logs success or failure for all
+// operations to the given T. Execution of the behavior will be terminated
+// immediately on the first failing assertion.
 //
-// Each assertion made with the Assertions object will result in either a
-// failure or a success being written to the sink.
+// The following will log one entry for each successful test case starting at
+// the first one and the first failure that is encountered.
+//
+// 	require := Require(t)
+// 	for _, tt := range tests {
+// 		require.Equals(tt.want, f(tt.give), "expected f(%v) == %v", tt.give, tt.want)
+// 	}
 func Require(t T) Assertions {
 	return sinkAssertions{t, requireAssertions{require.New(sinkTestingT{t})}}
 }
 
-// Fatals builds an Assertions object similar to Require, except that success
-// cases are not written to the Sink, only failures are.
+// Fatals builds an Assertions object that logs only failures to the given
+// T. Execution of the behavior will be terminated immediately on the first
+// failing assertion.
 //
-// Behavior exception stops after the first failure.
+// The following will log the first failure encountered or nothing if all test
+// cases were succesful.
+//
+// 	fatals := Fatals(t)
+// 	for _, tt := range tests {
+// 		fatals.Equals(tt.want, f(tt.give), "expected f(%v) == %v", tt.give, tt.want)
+// 	}
 func Fatals(t T) Assertions {
 	return requireAssertions{require.New(sinkTestingT{t})}
 }
 
-// sinkTestingT adapts a Sink into an {require,assert}.TestingT
+// sinkTestingT adapts a crossdock.T into an {require,assert}.TestingT
 type sinkTestingT struct{ t T }
 
 func (st sinkTestingT) FailNow() { st.t.FailNow() }
@@ -77,7 +99,50 @@ func (st sinkTestingT) Errorf(format string, args ...interface{}) {
 //////////////////////////////////////////////////////////////////////////////
 // Assertions
 
-// Assertions provides the same interface as the assert.Assertions struct.
+// Assertions provides helpers to assert conditions in crossdock behaviors.
+//
+// All assertions can include informative error messages formatted using
+// fmt.Sprintf style,
+//
+// 	assert := Assert(t)
+// 	assert.Contains(foo, "bar", "expected to find 'bar' in %q", foo)
+//
+// All assert operations return true if the condition was met and false
+// otherwise. This allows gating operations that would otherwise panic behind
+// preconditions.
+//
+// 	if assert.Error(t, err, "expected failure") {
+// 		assert.Contains(t, err.Error(), "something went wrong", "error message mismatch")
+// 	}
+//
+// Additionally, in case of failure, all Assertions make an attempt to
+// provide a stack trace in the error message.
+//
+// Four kinds of Assertions objects are offered via the corresponding
+// functions:
+//
+// Assert(T): All asserts will result in a success or failure being logged to the
+// crossdock.T. Execution will continue on failure.
+//
+// Checks(T): Only failures will be logged to crossdock.T. Execution will
+// continue on failure.
+//
+// Require(T): All asserts will result in a success or failure being logged to
+// the crossdock.T. Execution of the behavior will be terminated immediately
+// on failure.
+//
+// Fatals(t): Only failures will be logged to crossdock.T. Execution of the
+// behavior will be temrinated immediately on failure.
+//
+//	                     +--------+--------+---------+--------+
+//	                     | Assert | Checks | Require | Fatals |
+//	+--------------------+--------+--------+---------+--------+
+// 	| Log on success     | Yes    | No     | Yes     | No     |
+//	+--------------------+--------+--------+---------+--------+
+// 	| Continue execution | Yes    | Yes    | No      | No     |
+// 	| on failure         |        |        |         |        |
+//	+--------------------+--------+--------+---------+--------+
+//
 type Assertions interface {
 	Condition(comp assert.Comparison, msgAndArgs ...interface{}) bool
 	Contains(s interface{}, contains interface{}, msgAndArgs ...interface{}) bool
@@ -115,7 +180,7 @@ type Assertions interface {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Sink
+// T => TestingT
 
 func formatMsgAndArgs(msgAndArgs []interface{}) string {
 	if len(msgAndArgs) == 0 {
