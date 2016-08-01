@@ -94,6 +94,9 @@ where the problem actually occurred in calling code.*/
 // of each stack frame leading from the assert call that failed back to the
 // current test entry point.
 func CallerInfo() []string {
+	// Our package name, we use this to find stacktraces boundaries.
+	const ourPackage = "github.com/crossdock/crossdock-go"
+
 	// 16 is how many traces we want to collect, its the call stack between
 	// CallerInfo and up toward the program entry point. As there is about 7
 	// frames above CallerInfo() until the usercode, this leaves about 8 frames
@@ -105,10 +108,8 @@ func CallerInfo() []string {
 	// our own CallerInfo frame.
 	stDepth := runtime.Callers(2, st)
 
-	r := []string{}
+	var callers []string
 	stIndex := 0
-
-	const ourPackage = "crossdock-go"
 
 	// We walk up the stack until we are outside our package.
 	for ; stIndex < stDepth; stIndex++ {
@@ -167,7 +168,7 @@ func CallerInfo() []string {
 		fname = fname[strings.LastIndexByte(fname, '.')+1:]
 
 		// We can happily collect the trace.
-		r = append(r, fmt.Sprintf("%s() %s:%d", fname, file, line))
+		callers = append(callers, fmt.Sprintf("%s() %s:%d", fname, file, line))
 
 		// If it looks like a test function, we stop the walk here.
 		if isTest(fname, "Test") ||
@@ -176,7 +177,7 @@ func CallerInfo() []string {
 			break
 		}
 	}
-	return r
+	return callers
 }
 
 // Stolen from the `go test` tool.
